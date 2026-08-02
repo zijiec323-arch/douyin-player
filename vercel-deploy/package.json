@@ -5,7 +5,8 @@
   "dependencies": {
     "node-fetch": "^2.7.0"
   },
-  "scripts": {
-    "dev": "vercel dev"
-  }
+ "scripts": {
+  "dev": "vercel dev",
+  "build": "echo 'No build step required'" 
+}
 }
