@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AIGC风之潇子创作站</title>
+    <meta name="description" content="潇子的个人自媒体创作展示站，分享视频、摄影作品、原创音乐">
+    <meta name="keywords" content="AIGC,创作,视频,摄影,音乐">
+    <!-- 微信分享Open Graph配置，分享时自动显示预览图和标题 -->
+    <meta property="og:title" content="AIGC风之潇子创作站">
+    <meta property="og:description" content="潇子的个人自媒体创作展示站">
+    <meta property="og:image" content="https://aimp-as-image-1257466817.cos.ap-beijing.myqcloud.com/2026/08/02/83936725c645462da2fb51983064c701.png">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://aigc-creator-site.vercel.app">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#00ffd1',
+                        darkbg: '#0f172a',
+                        carddark: 'rgba(30, 41, 59, 0.6)',
+                        lightbg: '#f8fafc',
+                        cardlight: 'rgba(255, 255, 255, 0.7)',
+                    },
+                    fontFamily: {
+                        display: ['"Noto Serif SC"', 'system-ui'],
+                        body: ['"Noto Sans SC"', 'system-ui'],
+                    },
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .text-shadow-glow { text-shadow: 0 0 8px rgba(0, 255, 209, 0.6); }
+            .backdrop-blur-card { backdrop-filter: blur(12px); }
+            .grid-pattern {
+                background-image: 
+                    linear-gradient(rgba(0, 255, 209, 0.05) 1px, transparent 1px),
+                    linear-gradient(90deg, rgba(0, 255, 209, 0.05) 1px, transparent 1px);
+                background-size: 40px 40px;
+            }
+            .card-hover { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+            .card-hover:hover { transform: translateY(-6px); box-shadow: 0 10px 25px -5px rgba(0, 255, 209, 0.2); }
+            .stagger-1 { animation-delay: 100ms; }
+            .stagger-2 { animation-delay: 200ms; }
+            .stagger-3 { animation-delay: 300ms; }
+            .stagger-4 { animation-delay: 400ms; }
+            .stagger-5 { animation-delay: 500ms; }
+            .stagger-6 { animation-delay: 600ms; }
+            .poster-gradient { background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 50%, #00ffd1 100%); }
+        }
+    </style>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&family=Noto+Serif+SC:wght@600;700;900&display=swap');
+        body { font-family: 'Noto Sans SC', system-ui; transition: background-color 0.3s ease, color 0.3s ease; }
+        .fade-in-card { opacity: 0; transform: translateY(20px); animation: fadeInUp 0.6s ease forwards; }
+        @keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
+        .music-bar { display: inline-block; width: 3px; margin: 0 1px; background-color: #00ffd1; animation: musicBar 1s ease-in-out infinite alternate; }
+        @keyframes musicBar { 0% { height: 8px; } 100% { height: 24px; } }
+        .music-bar:nth-child(1) { animation-delay: 0s; }
+        .music-bar:nth-child(2) { animation-delay: 0.2s; }
+        .music-bar:nth-child(3) { animation-delay: 0.4s; }
+        .music-bar:nth-child(4) { animation-delay: 0.6s; }
+        .music-bar:nth-child(5) { animation-delay: 0.8s; }
+        .noise-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; opacity: 0.03; z-index: -1; pointer-events: none;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        }
+    </style>
+</head>
+<body class="dark:bg-darkbg bg-lightbg dark:text-gray-100 text-gray-800 min-h-screen grid-pattern relative">
+    <div class="noise-overlay"></div>
+
+    <header class="fixed top-0 left-0 right-0 z-50 backdrop-blur-card dark:bg-slate-900/60 bg-white/60 border-b dark:border-slate-700/50 border-slate-200/50">
+        <div class="container mx-auto px-4 py-4 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-blue-500 flex items-center justify-center text-white text-lg font-bold">潇</div>
+                <h1 class="font-display text-xl md:text-2xl font-bold dark:text-white text-gray-900">
+                    <span class="dark:text-primary text-primary dark:text-shadow-glow">AIGC</span>风之潇子创作站
+                </h1>
+            </div>
+            <div class="flex items-center gap-3">
+                <button id="shareBtn" class="p-2.5 rounded-lg dark:hover:bg-slate-700/60 hover:bg-slate-100 transition-all" title="分享到微信"><i class="fa fa-weixin text-xl dark:text-gray-200 text-gray-700"></i></button>
+                <button id="themeToggle" class="p-2.5 rounded-lg dark:hover:bg-slate-700/60 hover:bg-slate-100 transition-all" title="切换主题">
+                    <i class="fa fa-moon-o dark:hidden text-xl text-gray-700"></i>
+                    <i class="fa fa-sun-o hidden dark:block text-xl text-gray-200"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 pt-28 pb-20">
+        <section class="mb-12 fade-in-card stagger-1">
+            <div class="backdrop-blur-card dark:bg-carddark bg-cardlight rounded-2xl p-6 md:p-8 border dark:border-slate-700/40 border-slate-200/60">
+                <div class="flex flex-col md:flex-row gap-6 items-center">
+                    <div class="w-24 h-24 rounded-full overflow-hidden border-2 dark:border-primary border-primary/70">
+                        <img src="https://picsum.photos/200/200" alt="潇子的头像" class="w-full h-full object-cover">
+                    </div>
+                    <div class="text-center md:text-left">
+                        <h2 class="font-display text-2xl md:text-3xl font-bold mb-2">你好，我是潇子 👋</h2>
+                        <p class="dark:text-gray-300 text-gray-600 max-w-2xl">专注AIGC内容创作，这里是我所有自媒体作品的聚合展示站。你可以在这里浏览我跨平台发布的所有视频、摄影作品和原创音乐，欢迎分享给更多同好。</p>
+                        <div class="flex gap-4 mt-4 justify-center md:justify-start">
+                            <a href="#" class="text-lg dark:text-gray-300 text-gray-600 dark:hover:text-cyan-400 hover:text-cyan-500 transition-colors"><i class="fa fa-music"></i></a>
+                            <a href="#" class="text-lg dark:text-gray-300 text-gray-600 dark:hover:text-primary hover:text-primary transition-colors"><i class="fa fa-microphone"></i></a>
+                            <a href="#" class="text-lg dark:text-gray-300 text-gray-600 dark:hover:text-primary hover:text-primary transition-colors"><i class="fa fa-github"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="mb-16">
+            <h3 class="font-display text-2xl font-bold mb-6 flex items-center gap-2 fade-in-card stagger-2"><i class="fa fa-music text-cyan-400"></i> 抖音作品合集</h3>
+            <div id="douyinGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5"></div>
+        </section>
+
+        <section class="mb-16">
+            <div class="flex items-center justify-between mb-6">
+                <h3 class="font-display text-2xl font-bold flex items-center gap-2 fade-in-card stagger-3"><i class="fa fa-user dark:text-primary text-primary"></i> 个人照片</h3>
+                <button class="p-2 rounded-lg dark:hover:bg-slate-700/60 hover:bg-slate-100 transition-all" data-upload-target="personalPhotos" title="上传照片"><i class="fa fa-plus text-lg dark:text-gray-200 text-gray-700"></i></button>
+            </div>
+            <div id="personalPhotosGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                <div class="col-span-full py-20 text-center dark:text-gray-400 text-gray-500 empty-personal"><i class="fa fa-camera text-4xl mb-3"></i><p>点击右上角+号上传你的个人照片和视频</p></div>
+            </div>
+        </section>
+
+        <section class="mb-16">
+            <div class="flex items-center justify-between mb-6">
+                <h3 class="font-display text-2xl font-bold flex items-center gap-2 fade-in-card stagger-4"><i class="fa fa-magic dark:text-primary text-primary"></i> AI风趣玩法</h3>
+                <button class="p-2 rounded-lg dark:hover:bg-slate-700/60 hover:bg-slate-100 transition-all" data-upload-target="aiFunWorks" title="上传AI创意作品"><i class="fa fa-plus text-lg dark:text-gray-200 text-gray-700"></i></button>
+            </div>
+            <div id="aiFunGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                <div class="col-span-full py-20 text-center dark:text-gray-400 text-gray-500 empty-ai"><i class="fa fa-lightbulb-o text-4xl mb-3"></i><p>点击右上角+号上传你的AI趣味创作作品</p></div>
+            </div>
+        </section>
+
+        <section>
+            <h3 class="font-display text-2xl font-bold mb-6 flex items-center gap-2 fade-in-card stagger-5"><i class="fa fa-microphone text-yellow-400"></i> 全民K歌音乐</h3>
+            <div id="kugouGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5"></div>
+        </section>
+    </main>
+
+    <div id="uploadModal" class="fixed inset-0 z-[100] hidden items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+        <div class="backdrop-blur-card dark:bg-slate-800/95 bg-white/95 w-full max-w-md rounded-2xl p-6 border dark:border-slate-700 border-slate-200">
+            <div class="flex justify-between items-center mb-5"><h3 class="font-display text-xl font-bold">上传新作品</h3><button id="closeUpload" class="p-1 hover:opacity-70"><i class="fa fa-times text-lg"></i></button></div>
+            <div class="space-y-4">
+                <div><label class="block text-sm font-medium mb-2 dark:text-gray-300 text-gray-700">作品类型</label>
+                    <select id="mediaType" class="w-full px-3 py-2.5 rounded-lg dark:bg-slate-700 bg-slate-100 border dark:border-slate-600 border-slate-300">
+                        <option value="photo">照片</option><option value="short-video">短视频</option><option value="music">音乐</option>
+                    </select>
+                </div>
+                <div><label class="block text-sm font-medium mb-2 dark:text-gray-300 text-gray-700">选择文件</label>
+                    <input type="file" id="fileInput" class="w-full px-3 py-2.5 rounded-lg dark:bg-slate-700 bg-slate-100 border dark:border-slate-600 border-slate-300" accept="image/*,video/mp4,audio/*">
+                </div>
+                <div><label class="block text-sm font-medium mb-2 dark:text-gray-300 text-gray-700">自定义名称</label>
+                    <input type="text" id="mediaName" placeholder="给你的作品起个名字" class="w-full px-3 py-2.5 rounded-lg dark:bg-slate-700 bg-slate-100 border dark:border-slate-600 border-slate-300">
+                </div>
+                <button id="confirmUpload" class="w-full bg-primary text-gray-900 font-medium py-2.5 rounded-lg hover:opacity-90 transition-opacity mt-2">确认上传</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="shareModal" class="fixed inset-0 z-[100] hidden items-center justify-center bg-black/70 backdrop-blur-sm p-4">
+        <div class="poster-gradient w-full max-w-sm rounded-3xl p-8 text-white text-center shadow-2xl">
+            <h3 class="font-display text-2xl font-bold mb-3 text-shadow-glow">AIGC风之潇子创作站</h3>
+            <p class="text-white/80 mb-6">微信扫码访问本站，浏览潇子的所有创意作品</p>
+            <div class="bg-white p-4 rounded-xl inline-block mb-5">
+                <canvas id="qrcode" width="192" height="192"></canvas>
+            </div>
+            <p id="shareUrlDisplay" class="text-sm text-white/70 mb-3 break-all font-mono select-all">点击复制按钮获取链接</p>
+            <button id="copyShareUrlBtn" class="mt-3 px-6 py-2 bg-white/20 backdrop-blur rounded-lg hover:bg-white/30 transition-all w-full mb-2">复制链接</button>
+            <button id="closeShare" class="px-6 py-2 bg-white/10 backdrop-blur rounded-lg hover:bg-white/20 transition-all w-full">关闭</button>
+        </div>
+    </div>
+
+    <div id="renameModal" class="fixed inset-0 z-[100] hidden items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+        <div class="backdrop-blur-card dark:bg-slate-800/95 bg-white/95 w-full max-w-md rounded-2xl p-6 border dark:border-slate-700 border-slate-200">
+            <div class="flex justify-between items-center mb-5"><h3 class="font-display text-xl font-bold">重命名作品</h3><button id="closeRename" class="p-1 hover:opacity-70"><i class="fa fa-times text-lg"></i></button></div>
+            <input type="hidden" id="renameTargetId">
+            <input type="hidden" id="renameTargetType">
+            <div class="space-y-4">
+                <div><label class="block text-sm font-medium mb-2 dark:text-gray-300 text-gray-700">新的作品名称</label>
+                    <input type="text" id="newNameInput" placeholder="输入新名称" class="w-full px-3 py-2.5 rounded-lg dark:bg-slate-700 bg-slate-100 border dark:border-slate-600 border-slate-300">
+                </div>
+                <button id="confirmRename" class="w-full bg-primary text-gray-900 font-medium py-2.5 rounded-lg hover:opacity-90 transition-opacity mt-2">确认修改</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="videoPlayerModal" class="fixed inset-0 z-[100] hidden items-center justify-center bg-black/90 p-4">
+        <button id="closeVideoPlayer" class="absolute top-6 right-6 text-white text-2xl z-50"><i class="fa fa-times"></i></button>
+        <div class="w-full max-w-4xl aspect-video">
+            <video id="douyinVideoPlayer" controls autoplay class="w-full h-full rounded-xl bg-black"></video>
+        </div>
+    </div>
+
+    <div id="previewModal" class="fixed inset-0 z-[100] hidden items-center justify-center bg-black/90 p-4">
+        <button id="closePreview" class="absolute top-6 right-6 text-white text-2xl z-50"><i class="fa fa-times"></i></button>
+        <div id="previewContent" class="w-full max-w-4xl flex items-center justify-center"></div>
+    </div>
+
+    <script>
+        // Vercel环境API地址自动适配
+        const API_PARSE_URL = '/api/douyin-parse'
+        const siteData = {
+            douyinVideos: [
+                { id: 'dy1', name: "AIGC创作日常分享 11月13日", cover: "https://aimp-as-image-1257466817.cos.ap-beijing.myqcloud.com/2026/08/02/83936725c645462da2fb51983064c701.png", url: "https://v.douyin.com/rAGDQoapGbk/" },
+                { id: 'dy2', name: "AI绘画实战教程 11月26日", cover: "https://picsum.photos/seed/dy2/600/400", url: "https://v.douyin.com/3Ur4ObS-pxc/" },
+                { id: 'dy3', name: "赛博风格场景生成 12月26日", cover: "https://picsum.photos/seed/dy3/600/400", url: "https://v.douyin.com/pcTlDIiOUcI/" },
+                { id: 'dy4', name: "短视频AIGC转场技巧 7月14日", cover: "https://picsum.photos/seed/dy4/600/400", url: "https://v.douyin.com/RwuHNRmlFgI/" },
+                { id: 'dy5', name: "创意特效实拍演示 8月5日", cover: "https://picsum.photos/seed/dy5/600/400", url: "https://v.douyin.com/brZlW2Y1cLw/" },
+                { id: 'dy6', name: "新年创意作品展示 2月7日", cover: "https://picsum.photos/seed/dy6/600/400", url: "https://v.douyin.com/TfhlJv_OEOA/" }
+            ],
+            personalPhotos: JSON.parse(localStorage.getItem('personalPhotos')) || [],
+            aiFunWorks: JSON.parse(localStorage.getItem('aiFunWorks')) || [],
+            kugouMusic: [{ id: 'k1', name: "我的全民K歌作品列表", cover: "https://picsum.photos/seed/kge1/600/600", url: "https://kg.qq.com/" }]
+        }
+
+        // 抖音视频点击直接解析播放，不需要跳转外部
+        document.addEventListener('click', async (e) => {
+            if (e.target.closest('#douyinGrid a, #douyinGrid a *')) {
+                e.preventDefault()
+                const aTag = e.target.closest('a')
+                const shareUrl = aTag.getAttribute('href')
+                const cardName = aTag.querySelector('p, h3').innerText
+                try {
+                    const res = await fetch(`${API_PARSE_URL}?url=${encodeURIComponent(shareUrl)}`)
+                    const data = await res.json()
+                    if (data.code === 200) {
+                        const videoPlayer = document.getElementById('douyinVideoPlayer')
+                        videoPlayer.src = data.data
+                        document.getElementById('videoPlayerModal').classList.remove('hidden')
+                        document.getElementById('videoPlayerModal').classList.add('flex')
+                    } else {
+                        alert('视频解析失败，请稍后重试')
+                    }
+                } catch (e) {
+                    alert('解析服务暂时不可用')
+                }
+            }
+        })
+        document.getElementById('closeVideoPlayer').addEventListener('click', () => {
+            const video = document.getElementById('douyinVideoPlayer')
+            video.pause()
+            video.src = ''
+            document.getElementById('videoPlayerModal').classList.add('hidden')
+            document.getElementById('videoPlayerModal').classList.remove('flex')
+        })
+
+        // 渲染抖音视频
+        function renderDouyinGrid() {
+            const grid = document.getElementById('douyinGrid')
+            grid.innerHTML = ''
+            siteData.douyinVideos.forEach((video, index) => {
+                const card = document.createElement('div')
+                card.className = `backdrop-blur-card dark:bg-carddark bg-cardlight rounded-xl overflow-hidden border dark:border-slate-700/40 border-slate-200/60 card-hover fade-in-card stagger-${(index % 6) + 1}`
+                card.innerHTML = `
+                    <a href="${video.url}" class="block cursor-pointer">
+                        <div class="aspect-video overflow-hidden relative">
+                            <img src="${video.cover}" alt="${video.name}" class="w-full h-full object-cover hover:scale-105 transition-transform duration-500">
+                            <div class="absolute inset-0 flex items-center justify-center">
+                                <div class="w-16 h-16 rounded-full bg-black/60 backdrop-blur flex items-center justify-center"><i class="fa fa-play text-white text-2xl ml-1"></i></div>
+                            </div>
+                            <div class="absolute top-3 left-3 backdrop-blur-sm bg-black/60 px-2.5 py-1 rounded-md"><i class="fa fa-music text-cyan-400"></i></div>
+                        </div>
+                    </a>
+                    <div class="p-4">
+                        <div class="flex items-start justify-between gap-2">
+                            <a href="${video.url}" class="font-medium text-lg hover:text-cyan-400 transition-colors line-clamp-2">${video.name}</a>
+                            <div class="relative group">
+                                <button class="p-1.5 hover:bg-black/10 dark:hover:bg-white/10 rounded-full text-sm"><i class="fa fa-ellipsis-v"></i></button>
+                                <div class="absolute right-0 top-full mt-1 w-36 dark:bg-slate-800 bg-white rounded-lg shadow-lg border dark:border-slate-700 border-slate-200 hidden group-hover:block z-10">
+                                    <button class="rename-btn w-full text-left px-3 py-2 text-sm hover:dark:bg-slate-700 hover:bg-slate-100" data-id="${video.id}" data-type="douyin"><i class="fa fa-pencil mr-2"></i>重命名</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `
+                grid.appendChild(card)
+            })
+        }
+
+        // 渲染个人照片
+        function renderPersonalPhotos() {
+            const grid = document.getElementById('personalPhotosGrid')
+            if (siteData.personalPhotos.length === 0) {
+                grid.innerHTML = `<div class="col-span-full py-20 text-center dark:text-gray-400 text-gray-500"><i class="fa fa-camera text-4xl mb-3"></i><p>点击右上角+号上传你的个人照片和视频</p></div>`
+                return
+            }
+            grid.innerHTML = ''
+            siteData.personalPhotos.forEach((media, index) => {
+                const typeIcon = { 'photo': 'fa-camera', 'short-video': 'fa-film', 'music': 'fa-music' }[media.type] || 'fa-file'
+                const card = document.createElement('div')
+                card.className = `backdrop-blur-card dark:bg-carddark bg-cardlight rounded-xl overflow-hidden border dark:border-slate-700/40 border-slate-200/60 card-hover fade-in-card stagger-${(index % 6) + 1}`
+                card.innerHTML = `
+                    <div class="aspect-square overflow-hidden relative cursor-pointer open-preview-btn" data-id="${media.id}" data-source="personal">
+                        <img src="${media.cover}" alt="${media.name}" class="w-full h-full object-cover hover:scale-105 transition-transform duration-500">
+                        <div class="absolute top-3 left-3 backdrop-blur-sm bg-black/60 px-2.5 py-1 rounded-md"><i class="fa ${typeIcon} text-white text-sm"></i></div>
+                    </div>
+                    <div class="p-4">
+                        <div class="flex items-start justify-between gap-2">
+                            <p class="font-medium text-lg line-clamp-2">${media.name}</p>
+                            <div class="relative group">
+                                <button class="p-1.5 hover:bg-black/10 dark:hover:bg-white/10 rounded-full text-sm"><i class="fa fa-ellipsis-v"></i></button>
+                                <div class="absolute right-0 top-full mt-1 w-36 dark:bg-slate-800 bg-white rounded-lg shadow-lg border dark:border-slate-700 border-slate-200 hidden group-hover:block z-10">
+                                    <button class="rename-btn w-full text-left px-3 py-2 text-sm hover:dark:bg-slate-700 hover:bg-slate-100" data-id="${media.id}" data-type="personal"><i class="fa fa-pencil mr-2"></i>重命名</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `
+                grid.appendChild(card)
+            })
+            localStorage.setItem('personalPhotos', JSON.stringify(siteData.personalPhotos))
+        }
+
+        // 渲染AI玩法作品
+        function renderAiFunWorks() {
+            const grid = document.getElementById('aiFunGrid')
+            if (siteData.aiFunWorks.length === 0) {
+                grid.innerHTML = `<div class="col-span-full py-20 text-center dark:text-gray-400 text-gray-500"><i class="fa fa-lightbulb-o text-4xl mb-3"></i><p>点击右上角+号上传你的AI趣味创作作品</p></div>`
+                return
+            }
+            grid.innerHTML = ''
+            siteData.aiFunWorks.forEach((media, index) => {
+                const typeIcon = { 'photo': 'fa-camera', 'short-video': 'fa-film', 'music': 'fa-music' }[media.type] || 'fa-file'
+                const card = document.createElement('div')
+                card.className = `backdrop-blur-card dark:bg-carddark bg-cardlight rounded-xl overflow-hidden border dark:border-slate-700/40 border-slate-200/60 card-hover fade-in-card stagger-${(index % 6) + 1}`
+                card.innerHTML = `
+                    <div class="aspect-square overflow-hidden relative cursor-pointer open-preview-btn" data-id="${media.id}" data-source="ai">
+                        <img src="${media.cover}" alt="${media.name}" class="w-full h-full object-cover hover:scale-105 transition-transform duration-500">
+                        <div class="absolute top-3 left-3 backdrop-blur-sm bg-black/60 px-2.5 py-1 rounded-md"><i class="fa ${typeIcon} text-white text-sm"></i></div>
+                    </div>
+                    <div class="p-4">
+                        <div class="flex items-start justify-between gap-2">
+                            <p class="font-medium text-lg line-clamp-2">${media.name}</p>
+                            <div class="relative group">
+                                <button class="p-1.5 hover:bg-black/10 dark:hover:bg-white/10 rounded-full text-sm"><i class="fa fa-ellipsis-v"></i></button>
+                                <div class="absolute right-0 top-full mt-1 w-36 dark:bg-slate-800 bg-white rounded-lg shadow-lg border dark:border-slate-700 border-slate-200 hidden group-hover:block z-10">
+                                    <button class="rename-btn w-full text-left px-3 py-2 text-sm hover:dark:bg-slate-700 hover:bg-slate-100" data-id="${media.id}" data-type="ai"><i class="fa fa-pencil mr-2"></i>重命名</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `
+                grid.appendChild(card)
+            })
+            localStorage.setItem('aiFunWorks', JSON.stringify(siteData.aiFunWorks))
+        }
+
+        // 渲染全民K歌
+        function renderKugouGrid() {
+            const grid = document.getElementById('kugouGrid')
+            grid.innerHTML = ''
+            siteData.kugouMusic.forEach((item, index) => {
+                const card = document.createElement('div')
+                card.className = `backdrop-blur-card dark:bg-carddark bg-cardlight rounded-xl overflow-hidden border dark:border-slate-700/40 border-slate-200/60 card-hover fade-in-card stagger-${(index % 6) + 1}`
+                card.innerHTML = `
+                    <a href="${item.url}" target="_blank" rel="noopener noreferrer" class="block">
+                        <div class="aspect-square overflow-hidden relative">
+                            <img src="${item.cover}" alt="${item.name}" class="w-full h-full object-cover hover:scale-105 transition-transform duration-500">
+                            <div class="absolute top-3 left-3 backdrop-blur-sm bg-black/60 px-2.5 py-1 rounded-md"><i class="fa fa-microphone text-yellow-400"></i></div>
+                            <div class="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 to-transparent">
+                                <div class="flex justify-center">
+                                    <div class="music-bar"></div><div class="music-bar"></div><div class="music-bar"></div><div class="music-bar"></div><div class="music-bar"></div>
+                                </div>
+                                <p class="text-white text-center mt-2">点击登录查看我的全民K歌作品</p>
+                            </div>
+                        </div>
+                    </a>
+                    <div class="p-4">
+                        <a href="${item.url}" target="_blank" rel="noopener noreferrer" class="font-medium text-lg hover:text-yellow-400 transition-colors line-clamp-2">${item.name}</a>
+                    </div>
+                `
+                grid.appendChild(card)
+            })
+        }
+
