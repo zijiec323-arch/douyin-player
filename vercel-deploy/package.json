@@ -1,0 +1,11 @@
+{
+  "name": "aigc-creator-site",
+  "version": "1.0.0",
+  "description": "AIGC风之潇子创作站 - Vercel部署版",
+  "dependencies": {
+    "node-fetch": "^2.7.0"
+  },
+  "scripts": {
+    "dev": "vercel dev"
+  }
+}
