@@ -6,10 +6,6 @@
       "use": "@vercel/node"
     },
     {
-      "src": "*.html",
-      "use": "@vercel/static"
-    },
-    {
       "src": "**/*",
       "use": "@vercel/static"
     }
@@ -22,15 +18,6 @@
     {
       "src": "/(.*)",
       "dest": "/$1"
-    }
-  ],
-  "headers": [
-    {
-      "source": "/(.*)",
-      "headers": [
-        { "key": "Access-Control-Allow-Origin", "value": "*" },
-        { "key": "Referrer-Policy", "value": "no-referrer" }
-      ]
     }
   ]
 }
